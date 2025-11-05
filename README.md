@@ -71,8 +71,6 @@ WealthifyPro/
 
 ## 📸 Screenshots
 
-## 📸 Screenshots
-
 ![Interest Calculator](screenshots/interest.png)
 ![Date Calculator](screenshots/datecalc.png)
 ![Popup Calculator](screenshots/calc.png)
