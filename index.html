@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WealthifyPro</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-left">
+            <div class="app-icon" aria-hidden="true">💰</div>
+            <h1 class="app-title">WealthifyPro</h1>
+        </div>
+        <div class="header-right">
+            <select id="paletteSelect" class="palette-select" aria-label="Color theme">
+                <optgroup label="Light Themes">
+                    <option value="mint-cream">Mint Cream 🍃</option>
+                    <option value="warm-beige">Warm Beige ☕</option>
+                    <option value="soft-teal">Soft Teal 💧</option>
+                    <option value="lavender-mist">Lavender Mist 🌸</option>
+                    <option value="sky-breeze">Sky Breeze 🌤️</option>
+                    <option value="blush-rose">Blush Rose 🌷</option>
+                    <option value="ivory-glow">Ivory Glow 🤍</option>
+                    <option value="ocean-pearl">Ocean Pearl 🐚</option>
+                    <option value="lemon-frost">Lemon Frost 🍋</option>
+                    <option value="cloud-drift">Cloud Drift ☁️</option>
+                    <option value="frost-mint">Frost Mint ❄️</option>
+                    <option value="peach-glow">Peach Glow 🍑</option>
+                    <option value="sand-dune">Sand Dune 🏜️</option>
+                    <option value="snow-lilac">Snow Lilac ❄️🌸</option>
+                </optgroup>
+                <optgroup label="Dark Themes">
+                    <option value="emerald-night">Emerald Night 🌿</option>
+                    <option value="rust-orange">Rust Orange 🧡</option>
+                    <option value="charcoal-violet">Charcoal Violet 🟣</option>
+                    <option value="deep-plum">Deep Plum 🟣</option>
+                    <option value="midnight-blue">Midnight Blue 🌌</option>
+                    <option value="wine-red">Wine Red 🍷</option>
+                    <option value="onyx-shadow">Onyx Shadow ⚫</option>
+                    <option value="deep-sea">Deep Sea 🌊</option>
+                    <option value="amber-gold">Amber Gold 🟡</option>
+                    <option value="storm-grey">Storm Grey 🌪️</option>
+                    <option value="forest-pine">Forest Pine 🌲</option>
+                    <option value="mocha-brown">Mocha Brown ☕</option>
+                    <option value="copper-dust">Copper Dust 🧱</option>
+                    <option value="twilight-purple">Twilight Purple 🌒</option>
+                </optgroup>
+            </select>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card note-card" aria-label="Notes">
+            <h2 style="margin-top:0;margin-bottom:8px;">Notes</h2>
+            <ul class="notes-list">
+                <li>📌 You can choose between full Simple Interest or a custom option where Simple Interest is applied for certain years and Compound Interest for the remaining period.</li>
+                <li>📅 The Date Difference Calculator uses the 30/360 day count convention for accurate interest calculations.</li>
+                <li><strong>Formulas</strong>: Simple Interest = (P × R × D) / 3000 | Compound Interest = P × (1 + R/3000)^D − P</li>
+            </ul>
+        </section>
+        <section class="card" id="interestCard">
+            <div class="card-header">
+                <h2>WealthifyPro</h2>
+                <div class="card-header-actions">
+                    <button id="toggleDateCalc" class="button ghost" aria-label="Toggle Date Difference Calculator">📅 Date Calculator</button>
+                    <button id="openCalc" class="button ghost" aria-haspopup="dialog" aria-controls="calcModal">🧮 Calculator</button>
+                </div>
+            </div>
+
+            <div class="grid two-col">
+                <div class="form-group">
+                    <label for="principal">Principal (₹)</label>
+                    <input type="number" id="principal" placeholder="Enter principal" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="rate">Rate of Interest (₹ per day per ₹1000)</label>
+                    <input type="number" id="rate" placeholder="Eg: 1.5 means ₹1.5 per ₹1000 per day." min="0" step="0.0001">
+                </div>
+                <div class="form-group">
+                    <label for="days">Duration (Days)</label>
+                    <input type="number" id="days" placeholder="Enter total days" min="0" step="1">
+                </div>
+                <div class="form-group">
+                    <label for="mode">Mode</label>
+                    <select id="mode">
+                        <option value="full-simple">Full Simple Interest</option>
+                        <option value="custom">Custom (Simple + Compound)</option>
+                    </select>
+                </div>
+
+                <div class="form-group hidden" id="simpleYearsGroup">
+                    <label for="simpleYears">Simple Interest Duration (Years)</label>
+                    <input type="number" id="simpleYears" placeholder="e.g., 1" min="0" step="0.25">
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="calcInterest" class="button primary">Calculate Interest</button>
+                <button id="resetInterest" class="button secondary">Reset</button>
+            </div>
+
+            <div id="interestLoading" class="loading-shimmer hidden"></div>
+
+            <div id="interestResults" class="results fade-in hidden">
+                <div class="result-card">
+                    <div class="result-label">Simple Interest (₹)</div>
+                    <div class="result-amount" id="siAmount">₹0.00</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-label">Compound Interest (₹)</div>
+                    <div class="result-amount" id="ciAmount">₹0.00</div>
+                </div>
+                <div class="result-card total">
+                    <div class="result-label">Final Total</div>
+                    <div class="result-amount" id="totalAmount">₹0.00</div>
+                </div>
+            </div>
+
+            <div id="interestHistory" class="history">
+                <div class="history-header">
+                    <h3>Last 5 Calculations</h3>
+                    <button id="clearHistory" class="button tiny ghost">Clear</button>
+                </div>
+                <ul id="historyList" class="history-list"></ul>
+            </div>
+        </section>
+
+        <section class="card hidden" id="dateCard">
+            <div class="card-header">
+                <h2 title="Uses 30/360 convention">Date Difference Calculator <span class="tooltip">(30/360)</span></h2>
+                <button id="closeDateCalc" class="icon-button" aria-label="Close Date Calculator">✖</button>
+            </div>
+            <div class="grid two-col">
+                <div class="form-group">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="form-group">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate">
+                </div>
+            </div>
+            <div class="actions">
+                <button id="calcDates" class="button primary">Calculate</button>
+            </div>
+            <div id="dateError" class="error hidden">End Date must be after Start Date.</div>
+            <div id="dateResults" class="results fade-in hidden">
+                <div class="result-inline">
+                    <span class="muted">Total Days (30/360):</span>
+                    <strong id="totalDays">0</strong>
+                </div>
+                <div class="result-inline">
+                    <span class="muted">Equivalent Duration:</span>
+                    <strong id="ymd">0y : 0m : 0d</strong>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">© 2025 WealthifyPro | Built by <a class="footer-link" href="https://worksbysuresh.netlify.app/" target="_blank" rel="noopener" title="Visit Suresh Reddy">Suresh Reddy</a></footer>
+
+    <dialog id="calcModal" class="calc-modal">
+        <div class="calc-window">
+            <div class="calc-header">
+                <h3>Calculator</h3>
+                <button id="closeCalc" class="icon-button" aria-label="Close">✖</button>
+            </div>
+            <div class="calc-display">
+                <input id="calcInput" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" placeholder="0">
+            </div>
+            <div class="calc-actions">
+                <button id="calcCopy" class="button tiny">Copy</button>
+                <button id="calcPaste" class="button tiny">Paste</button>
+                <button id="calcClear" class="button tiny secondary">Clear</button>
+            </div>
+            <div class="calc-grid">
+                <button data-key="7">7</button>
+                <button data-key="8">8</button>
+                <button data-key="9">9</button>
+                <button data-op="/">÷</button>
+                <button data-key="4">4</button>
+                <button data-key="5">5</button>
+                <button data-key="6">6</button>
+                <button data-op="*">×</button>
+                <button data-key="1">1</button>
+                <button data-key="2">2</button>
+                <button data-key="3">3</button>
+                <button data-op="-">−</button>
+                <button data-key="0">0</button>
+                <button data-key=".">.</button>
+                <button id="calcEquals" class="equals">=</button>
+                <button data-op="+">+</button>
+            </div>
+            <div class="calc-history">
+                <div class="history-header">
+                    <h4>History</h4>
+                    <button id="calcClearHistory" class="button tiny ghost">Clear</button>
+                </div>
+                <ul id="calcHistoryList" class="history-list"></ul>
+            </div>
+        </div>
+    </dialog>
+
+    <div id="toast" class="toast hidden">Calculated successfully</div>
+
+    <script src="script.js"></script>
+</body>
+<noscript>This app requires JavaScript to run.</noscript>
+</html>
+
